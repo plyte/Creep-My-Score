@@ -1,56 +1,37 @@
-# Name: Request.py
-# Purpose: To call the riot API
-# Date: 08/25/16
-# Author: Matthew Jones
-
-import requests
-import Consts
-import json
-import sOE
 
 
-def callid(name):
-    key = Consts.URL['key']
-    region = Consts.REGION['North_America']
-    version = Consts.VERSION['version']
-    url = Consts.URL['summoner'].format(
-        region=region,
-        key=key,
-        version=version,
-        ame=name
-    )
-    apiobjectci = requests.get(url)
-    jsondata = dict(json.loads(apiobjectci.text))
-    sumid = jsondata[name]['id']
+from cassiopeia import riotapi
+from cassiopeia.type.core.common import EventType
+from cassiopeia.type.dto import *
 
-    return sumid
+class module:
 
+    def __init__(self, name, region):
+        self.name = name
+        self.region = region
 
-def callmatchlist(sumid,year):
-    key = Consts.URL['key']
-    region = Consts.REGION['North_America']
-    url = Consts.URL['matchlist'].format(
-        region=region,
-        key=key,
-        sumid=sumid,
-        typeOfRanked=Consts.URL['RANKED_SOLO_5x5'],
-        year=year
-    )
-    apiobjectml = requests.get(url)
-    matchlist = dict(json.loads(apiobjectml.text))
+    def setregion(self):
 
-    return matchlist
+        region = riotapi.set_region(self.region)
+
+    def getsummoner(self):
+
+        summoner = riotapi.get_summoner_by_name(self.name)
+        return summoner
+
+    def getrecentmatch(self):
+
+        match_list = riotapi.get_match_list(self.getsummoner(), num_matches=5)
+        match = match_list[0].match()
+
+        return match
 
 
-def specificmatchinfo(matchid):
-    key = Consts.URL['key']
-    region = Consts.REGION['North_America']
-    url = Consts.URL['match'].format(
-        region=region,
-        key=key,
-        matchid=matchid,
-    )
-    apiobjectm = requests.get(url)
-    match = dict(json.loads(apiobjectm.text))
 
-    return match
+
+
+
+
+
+
+
